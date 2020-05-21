@@ -6,23 +6,40 @@ import ReactDOM from "react-dom";
 import "bootstrap";
 
 export function Counter(props) {
-	const [contador, setContador] = useState("");
+	const [seconds, setSeconds] = useState(0);
+	const [isActive, setIsActive] = useState(false);
+
+	const startButton = () => {
+		isActive ? setIsActive(false) : setIsActive(true);
+	};
+
+	const pauseTime = () => {
+		setIsActive(!isActive);
+	};
+
+	const resetButton = () => {
+		setSeconds(0);
+		setIsActive(false);
+	};
 
 	const onChangeHandler = event => {
-		setContador(event.target.value);
+		setSeconds(event.target.value);
 	};
 
-	const keyPressed = event => {
-		if (event.key === "Enter" && event.target.value !== "") {
-			submitMessage();
-			event.preventDefault();
-		}
-	};
-
-	const submitMessage = event => {
-		setContador({ contador: [...contador, useState] }); // [...num1, num2] sirve para ...num1 donde lo quiero meter, num2 lo que quiero meter.
-		setContador({ useState: "" });
-	};
+	useEffect(
+		() => {
+			let interval = null;
+			if (isActive) {
+				interval = setInterval(() => {
+					setSeconds(seconds => seconds - 1);
+				}, 1000);
+			} else if (!isActive && seconds !== 0) {
+				clearInterval(interval);
+			}
+			return () => clearInterval(interval);
+		},
+		[isActive, seconds]
+	);
 
 	//Esta sintaxis de Javascript se llama “desestructuración de arrays”. Significa que estamos creando dos variables contador y setContador, donde contador se obtiene del primer valor devuelto por useState y setContador es el segundo. Es equivalente a este código:
 	//var CounterStateVariable = useState(0); // Returns a pair
@@ -41,20 +58,31 @@ export function Counter(props) {
 		<form className="needs-validation" noValidate>
 			<div className="form-row justify-content-center">
 				<div className="col-auto justify-content-center">
-					<label className="title" htmlFor="validationCustom01">
+					<label className="title mt-2" htmlFor="validationCustom01">
 						Introduce here your seconds to countdown
 					</label>
 					<input
 						type="text"
-						className="form-control"
+						className="form-control mb-2"
 						id="validationCustom01"
 						placeholder="How many seconds?"
 						required
-						onKeyPress={keyPressed}
 						onChange={onChangeHandler}
-						value={contador}
+						value={seconds}
 					/>
-					<span>Your countdown {contador}</span>
+					<button
+						type="button"
+						className="btn btn-primary mr-2"
+						onClick={startButton}>
+						{isActive ? "Pause" : "Start"}
+					</button>
+					<button
+						type="button"
+						className="btn btn-primary mr-2"
+						onClick={resetButton}>
+						Reset
+					</button>
+					<span>Your countdown {seconds}</span>
 				</div>
 			</div>
 		</form>
