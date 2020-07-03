@@ -6,7 +6,7 @@ import ReactDOM from "react-dom";
 import "bootstrap";
 
 export function Counter(props) {
-	const [seconds, setSeconds] = useState(0);
+	const [seconds, setSeconds] = useState("");
 	const [isActive, setIsActive] = useState(false);
 
 	const startButton = () => {
@@ -18,7 +18,7 @@ export function Counter(props) {
 	};
 
 	const resetButton = () => {
-		setSeconds(0);
+		setSeconds("");
 		setIsActive(false);
 	};
 
@@ -29,12 +29,14 @@ export function Counter(props) {
 	useEffect(
 		() => {
 			let interval = null;
-			if (isActive) {
+			if (isActive && seconds > 0) {
 				interval = setInterval(() => {
 					setSeconds(seconds => seconds - 1);
 				}, 1000);
 			} else if (!isActive && seconds !== 0) {
 				clearInterval(interval);
+			} else if (seconds === 0) {
+				alert("Congratulations! You have reached your countdown!");
 			}
 			return () => clearInterval(interval);
 		},
@@ -70,19 +72,20 @@ export function Counter(props) {
 						onChange={onChangeHandler}
 						value={seconds}
 					/>
-					<button
-						type="button"
-						className="btn btn-primary mr-2"
-						onClick={startButton}>
-						{isActive ? "Pause" : "Start"}
-					</button>
-					<button
-						type="button"
-						className="btn btn-primary mr-2"
-						onClick={resetButton}>
-						Reset
-					</button>
-					<span>Your countdown {seconds}</span>
+					<div className="row justify-content-center">
+						<button
+							type="button"
+							className="col-2 btn btn-primary mr-1"
+							onClick={startButton}>
+							{isActive ? "Pause" : "Start"}
+						</button>
+						<button
+							type="button"
+							className="col-2 btn btn-primary ml-1"
+							onClick={resetButton}>
+							Reset
+						</button>
+					</div>
 				</div>
 			</div>
 		</form>
